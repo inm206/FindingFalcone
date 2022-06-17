@@ -53,7 +53,8 @@ export default {
   },
   data () {
     return {
-      strToken: "token",
+      strToken: "",
+      arrPlanets: [],
     }
   },
 
@@ -63,6 +64,7 @@ export default {
 
   mounted() {
     this.getToken()
+    this.getPlanets()
   },
 
   methods: {
@@ -71,6 +73,19 @@ export default {
         .then(response => {
           // handle success
           this.strToken = response.data.token
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        })
+    },
+
+    getPlanets() {
+      this.axios.get('planets')
+        .then(response => {
+          // handle success
+          console.log(response)
+          response.data.forEach(planet => {this.arrPlanets.push(planet)})
         })
         .catch(function (error) {
           // handle error
