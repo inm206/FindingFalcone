@@ -47,8 +47,36 @@
 
 export default {
   name: 'App',
+  inject: ['axios'],
   components: {
     
+  },
+  data () {
+    return {
+      strToken: "token",
+    }
+  },
+
+  created() {
+    // console.log(this.axios) // injected value
+  },
+
+  mounted() {
+    this.getToken()
+  },
+
+  methods: {
+    getToken() {
+      this.axios.post('token')
+        .then(response => {
+          // handle success
+          this.strToken = response.data.token
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        })
+    }
   }
 }
 </script>
