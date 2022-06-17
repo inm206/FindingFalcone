@@ -55,6 +55,7 @@ export default {
     return {
       strToken: "",
       arrPlanets: [],
+      arrVehicles: [],
     }
   },
 
@@ -65,6 +66,7 @@ export default {
   mounted() {
     this.getToken()
     this.getPlanets()
+    this.getVehicles()
   },
 
   methods: {
@@ -86,6 +88,19 @@ export default {
           // handle success
           console.log(response)
           response.data.forEach(planet => {this.arrPlanets.push(planet)})
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        })
+    },
+
+    getVehicles() {
+      this.axios.get('vehicles')
+        .then(response => {
+          // handle success
+          console.log(response)
+          response.data.forEach(vehicle => {this.arrVehicles.push(vehicle)})
         })
         .catch(function (error) {
           // handle error
