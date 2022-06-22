@@ -1,11 +1,11 @@
 <template>
-  <div class="justify-center flex items-center">
+  <header class="justify-center flex items-center">
     <div class="text-4xl font-bold">
       Finding Falcone!
     </div>
-  </div>
+  </header>
   <br><br>
-  <div v-if="!blnResults">
+  <section v-if="!blnResults">
     <div class="justify-center flex items-center">
       <div class="text-2xl">
         Select planets you want to search in:
@@ -32,10 +32,10 @@
     <div class="justify-center flex items-center text-red-700">
       <p v-if="blnApiError">API error, see console</p>
     </div>
-  </div>
-  <div v-if="blnResults">
+  </section>
+  <section v-if="blnResults">
     <ResultView @restart="startAgain" :intTotalTime="this.intTotalTime" :strPlanetName="this.strResultPlanet" :strStatus="this.strResultStatus"  />
-  </div>
+  </section>
 </template>
 
 <script>
