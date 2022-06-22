@@ -43,6 +43,7 @@ export default {
       strToken: "",
       arrPlanets: [],
       arrVehicles: [],
+      arrVehiclesReceived: [],
       arrSelectedPlanets: ["", "", "", ""],
       arrSelectedVehicles: ["", "", "", ""],
       arrTravelTimes: [0, 0, 0, 0],
@@ -106,6 +107,7 @@ export default {
           // handle success
           console.log(response)
           response.data.forEach(vehicle => {this.arrVehicles.push(vehicle)})
+          this.arrVehiclesReceived = JSON.parse(JSON.stringify(this.arrVehicles))
         })
         .catch(function (error) {
           // handle error
@@ -161,6 +163,18 @@ export default {
           this.arrSelectedVehicles[3] = arrDetails.vehicle
           this.arrTravelTimes[3] = arrDetails.time
           break
+      }
+      this.arrVehicles = JSON.parse(JSON.stringify(this.arrVehiclesReceived))
+      this.vehicleCountUpdater()
+    },
+
+    vehicleCountUpdater() {
+      for (let i = 0; i < this.arrVehicles.length; i++) {
+        this.arrSelectedVehicles.forEach(vehicle => {
+          if (this.arrVehicles[i].name === vehicle) {
+            this.arrVehicles[i].total_no -= 1
+          }
+        })
       }
     }
   }
