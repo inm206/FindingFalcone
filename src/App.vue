@@ -80,7 +80,6 @@ export default {
   },
 
   async created() {
-    // console.log(this.axios) // injected value
     await this.getToken()
     await this.getPlanets()
     await this.getVehicles()
@@ -107,7 +106,6 @@ export default {
       this.axios.get('planets')
         .then(response => {
           // handle success
-          console.log(response)
           response.data.forEach(planet => {this.arrPlanets.push(planet)})
         })
         .catch(function (error) {
@@ -120,7 +118,6 @@ export default {
       this.axios.get('vehicles')
         .then(response => {
           // handle success
-          console.log(response)
           response.data.forEach(vehicle => {this.arrVehicles.push(vehicle)})
           this.arrVehiclesReceived = JSON.parse(JSON.stringify(this.arrVehicles))
         })
@@ -138,7 +135,6 @@ export default {
       this.axios.post('find', {data: this.arrDataForFind})
         .then(response => {
           // handle success
-          console.log(response)
           this.strResultStatus = response.data.status
           this.strResultPlanet = response.data.planet_name
         })

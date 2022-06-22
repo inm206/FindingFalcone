@@ -65,7 +65,6 @@ export default {
       let arrCapableVehicles = []
       let intPlanetDistance = this.getPlanetDistance(strPlanet)
       this.intChosenPlanetDistance = intPlanetDistance
-      console.log("intPlanetDistance: ", intPlanetDistance)
 
       this.arrVehicles.forEach(vehicle => {
         if (vehicle.max_distance >= intPlanetDistance) {
@@ -95,7 +94,7 @@ export default {
           return
         }
       })
-      console.log("intVehicleSpeed:", intVehicleSpeed, "intPlanetDistance", this.intChosenPlanetDistance)
+
       return (this.intChosenPlanetDistance / intVehicleSpeed)
     }
   }
