@@ -5,38 +5,49 @@
     </div>
   </div>
   <br><br>
-  <div class="justify-center flex items-center">
-    <div class="text-2xl">
-      Select planets you want to search in:
-    </div>
-  </div>
-  <br><br>
-  <div class="justify-around flex items-center">
-    <div class="columns-5 minHeight50">
-      <DestinationColumn count=1 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
-      <DestinationColumn count=2 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
-      <DestinationColumn count=3 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
-      <DestinationColumn count=4 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
-      <div class="columns-1 text-2xl">
-        <br>
-        Time taken: {{ this.intTotalTime }}
+  <div v-if="!blnResults">
+    <div class="justify-center flex items-center">
+      <div class="text-2xl">
+        Select planets you want to search in:
       </div>
     </div>
+    <br><br>
+    <div class="justify-around flex items-center">
+      <div class="columns-5 minHeight50">
+        <DestinationColumn count=1 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
+        <DestinationColumn count=2 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
+        <DestinationColumn count=3 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
+        <DestinationColumn count=4 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
+        <div class="columns-1 text-2xl">
+          <br>
+          Time taken: {{ this.intTotalTime }}
+        </div>
+      </div>
+    </div>
+    <br><br><br>
+    <div class="justify-center flex items-center">
+      <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" @click="executeFind">Find Falcone!</button>
+      <br><br>
+    </div>
+    <div class="justify-center flex items-center text-red-700">
+      <p v-if="blnApiError">API error, see console</p>
+    </div>
   </div>
-  <br><br><br>
-  <div class="justify-center flex items-center">
-    <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" @click="executeFind">Find Falcone!</button>
+  <div v-if="blnResults">
+    <ResultView @restart="startAgain" :intTotalTime="this.intTotalTime" :strPlanetName="this.strResultPlanet" :strStatus="this.strResultStatus"  />
   </div>
 </template>
 
 <script>
 import DestinationColumn from './components/DestinationColumn.vue'
+import ResultView from './components/ResultView.vue'
 
 export default {
   name: 'App',
   inject: ['axios'],
   components: {
-    DestinationColumn
+    DestinationColumn,
+    ResultView
   },
   data () {
     return {
@@ -47,6 +58,10 @@ export default {
       arrSelectedPlanets: ["", "", "", ""],
       arrSelectedVehicles: ["", "", "", ""],
       arrTravelTimes: [0, 0, 0, 0],
+      blnResults: false,
+      blnApiError: false,
+      strResultPlanet: "",
+      strResultStatus: ""
     }
   },
 
@@ -116,15 +131,28 @@ export default {
     },
 
     async executeFind() {
+      let apiError = false
+      if (this.blnApiError) {
+        this.blnApiError = false
+      }
       this.axios.post('find', {data: this.arrDataForFind})
         .then(response => {
           // handle success
           console.log(response)
-          // this.strToken = response.data.token
+          this.strResultStatus = response.data.status
+          this.strResultPlanet = response.data.planet_name
         })
         .catch(function (error) {
           // handle error
           console.log(error);
+          apiError = true
+        })
+        .finally(() => {
+          if (!apiError) {
+            this.blnResults = true
+          } else {
+            this.blnApiError = true
+          }
         })
     },
 
@@ -176,6 +204,11 @@ export default {
           }
         })
       }
+    },
+
+    startAgain() {
+      // this.blnResults = false
+      window.location.reload();
     }
   }
 }
