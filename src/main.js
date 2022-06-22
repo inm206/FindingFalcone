@@ -7,7 +7,7 @@ import axios from 'axios'
 let axiosInstance = axios.create({
   baseURL: 'https://findfalcone.herokuapp.com/',
   timeout: 1000,
-  headers: {'Accept': 'application/json'}
+  headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
 });
 
 const app = createApp(App)

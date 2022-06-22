@@ -10,67 +10,72 @@
       Select planets you want to search in:
     </div>
   </div>
+  <br><br>
+  <div class="justify-around flex items-center">
+    <div class="columns-5 minHeight50">
+      <DestinationColumn count=1 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
+      <DestinationColumn count=2 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
+      <DestinationColumn count=3 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
+      <DestinationColumn count=4 :arr-planets="this.arrPlanets" :arr-vehicles="this.arrVehicles" @planet-chosen="planetChosen" @vehicle-chosen="vehicleChosen" class="minHeight50"/>
+      <div class="columns-1 text-2xl">
+        <br>
+        Time taken: {{ this.intTotalTime }}
+      </div>
+    </div>
+  </div>
+  <br><br><br>
   <div class="justify-center flex items-center">
-    <div class="columns-5 block">
-      <div>
-        <p class="block">Destination 1</p>
-      </div>
-      <div>
-        Destination 2
-      </div>
-      <div>
-        Destination 3
-      </div>
-      <div>
-        Destination 4
-      </div>
-    </div>
-    <br><br>
-    <div class="columns-5 block">
-      <div>
-        <select placeholder="Planet" name="" id="" class="bg-gray-50 border border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">Planet</select>
-      </div>
-      <div>
-
-      </div>
-      <div>
-
-      </div>
-      <div>
-
-      </div>
-    </div>
+    <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" @click="executeFind">Find Falcone!</button>
   </div>
 </template>
 
 <script>
+import DestinationColumn from './components/DestinationColumn.vue'
 
 export default {
   name: 'App',
   inject: ['axios'],
   components: {
-    
+    DestinationColumn
   },
   data () {
     return {
       strToken: "",
       arrPlanets: [],
       arrVehicles: [],
+      arrSelectedPlanets: ["", "", "", ""],
+      arrSelectedVehicles: ["", "", "", ""],
+      arrTravelTimes: [0, 0, 0, 0],
     }
   },
 
-  created() {
+  computed: {
+    arrDataForFind() {
+      return {
+        "token": this.strToken,
+        "planet_names": [...this.arrSelectedPlanets],
+        "vehicle_names": [...this.arrSelectedVehicles]
+      }
+    },
+
+    intTotalTime() {
+      return this.arrTravelTimes.reduce((partialSum, a) => partialSum + a, 0)
+    }
+  },
+
+  async created() {
     // console.log(this.axios) // injected value
+    await this.getToken()
+    await this.getPlanets()
+    await this.getVehicles()
   },
 
   mounted() {
-    this.getToken()
-    this.getPlanets()
-    this.getVehicles()
+    
   },
 
   methods: {
-    getToken() {
+    async getToken() {
       this.axios.post('token')
         .then(response => {
           // handle success
@@ -82,7 +87,7 @@ export default {
         })
     },
 
-    getPlanets() {
+    async getPlanets() {
       this.axios.get('planets')
         .then(response => {
           // handle success
@@ -95,7 +100,7 @@ export default {
         })
     },
 
-    getVehicles() {
+    async getVehicles() {
       this.axios.get('vehicles')
         .then(response => {
           // handle success
@@ -106,6 +111,57 @@ export default {
           // handle error
           console.log(error);
         })
+    },
+
+    async executeFind() {
+      this.axios.post('find', {data: this.arrDataForFind})
+        .then(response => {
+          // handle success
+          console.log(response)
+          // this.strToken = response.data.token
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        })
+    },
+
+    planetChosen(arrDetails) {
+      switch(arrDetails.count) {
+        case '1':
+          this.arrSelectedPlanets[0] = arrDetails.planet
+          break
+        case '2':
+          this.arrSelectedPlanets[1] = arrDetails.planet
+          break
+        case '3':
+          this.arrSelectedPlanets[2] = arrDetails.planet
+          break
+        case '4':
+          this.arrSelectedPlanets[3] = arrDetails.planet
+          break
+      }
+    },
+
+    vehicleChosen(arrDetails) {
+      switch(arrDetails.count) {
+        case '1':
+          this.arrSelectedVehicles[0] = arrDetails.vehicle
+          this.arrTravelTimes[0] = arrDetails.time
+          break
+        case '2':
+          this.arrSelectedVehicles[1] = arrDetails.vehicle
+          this.arrTravelTimes[1] = arrDetails.time
+          break
+        case '3':
+          this.arrSelectedVehicles[2] = arrDetails.vehicle
+          this.arrTravelTimes[2] = arrDetails.time
+          break
+        case '4':
+          this.arrSelectedVehicles[3] = arrDetails.vehicle
+          this.arrTravelTimes[3] = arrDetails.time
+          break
+      }
     }
   }
 }
@@ -119,5 +175,9 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+.minHeight50 {
+  min-height: 50vh
 }
 </style>
